@@ -1,0 +1,436 @@
+# ==========================================
+# TASK 2: UNEMPLOYMENT ANALYSIS
+# ==========================================
+
+# Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+# ==========================================
+# 1. LOAD DATASET
+# ==========================================
+
+df = pd.read_csv("Unemployment_Rate_upto_11_2020.csv")
+
+print("Dataset loaded successfully!")
+
+
+# ==========================================
+# 2. DATA CLEANING
+# ==========================================
+
+# Remove spaces from column names
+df.columns = df.columns.str.strip()
+
+# Convert Date into proper date format
+df["Date"] = pd.to_datetime(df["Date"], dayfirst=True)
+
+# Sort data by date
+df = df.sort_values("Date")
+
+
+# ==========================================
+# 3. DISPLAY DATA
+# ==========================================
+
+print("\nFirst 5 rows:")
+print(df.head())
+
+print("\nDataset shape:")
+print(df.shape)
+
+print("\nColumn names:")
+print(df.columns)
+
+print("\nMissing values:")
+print(df.isnull().sum())
+
+print("\nStatistical summary:")
+print(df.describe())
+
+
+# ==========================================
+# 4. OVERALL UNEMPLOYMENT RATE
+# ==========================================
+
+average_unemployment = df[
+    "Estimated Unemployment Rate (%)"
+].mean()
+
+print("\nAverage Unemployment Rate:",
+      round(average_unemployment, 2), "%")
+
+
+# ==========================================
+# 5. MONTHLY UNEMPLOYMENT RATE
+# ==========================================
+
+monthly_unemployment = df.groupby("Date")[
+    "Estimated Unemployment Rate (%)"
+].mean()
+
+print("\nMonthly Unemployment Rate:")
+print(monthly_unemployment)
+
+
+# ==========================================
+# 6. MONTHLY UNEMPLOYMENT GRAPH
+# ==========================================
+
+plt.figure(figsize=(10, 5))
+
+plt.plot(
+    monthly_unemployment.index,
+    monthly_unemployment.values,
+    marker="o"
+)
+
+plt.title("Monthly Unemployment Rate - 2020")
+plt.xlabel("Month")
+plt.ylabel("Unemployment Rate (%)")
+
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+
+plt.show()
+
+
+# ==========================================
+# 7. COVID-19 ANALYSIS
+# ==========================================
+
+# Before COVID
+before_covid = df[
+    df["Date"] < "2020-04-01"
+]
+
+# During COVID lockdown
+during_covid = df[
+    (df["Date"] >= "2020-04-01") &
+    (df["Date"] <= "2020-06-30")
+]
+
+# After lockdown
+after_covid = df[
+    df["Date"] >= "2020-07-01"
+]
+
+
+before_rate = before_covid[
+    "Estimated Unemployment Rate (%)"
+].mean()
+
+during_rate = during_covid[
+    "Estimated Unemployment Rate (%)"
+].mean()
+
+after_rate = after_covid[
+    "Estimated Unemployment Rate (%)"
+].mean()
+
+
+print("\n========== COVID-19 IMPACT ==========")
+
+print("Before COVID:",
+      round(before_rate, 2), "%")
+
+print("During COVID:",
+      round(during_rate, 2), "%")
+
+print("After COVID:",
+      round(after_rate, 2), "%")
+
+
+# ==========================================
+# 8. COVID COMPARISON GRAPH
+# ==========================================
+
+periods = [
+    "Before COVID",
+    "During COVID",
+    "After COVID"
+]
+
+rates = [
+    before_rate,
+    during_rate,
+    after_rate
+]
+
+plt.figure(figsize=(8, 5))
+
+plt.bar(periods, rates)
+
+plt.title("Impact of COVID-19 on Unemployment")
+plt.xlabel("Period")
+plt.ylabel("Average Unemployment Rate (%)")
+
+plt.tight_layout()
+plt.show()
+
+
+# ==========================================
+# 9. REGION-WISE UNEMPLOYMENT
+# ==========================================
+
+region_unemployment = df.groupby("Region")[
+    "Estimated Unemployment Rate (%)"
+].mean().sort_values(ascending=False)
+
+print("\n========== REGION-WISE UNEMPLOYMENT ==========")
+
+print(region_unemployment)
+
+
+# ==========================================
+# 10. REGION-WISE GRAPH
+# ==========================================
+
+plt.figure(figsize=(12, 8))
+
+region_unemployment.sort_values().plot(
+    kind="barh"
+)
+
+plt.title("Average Unemployment Rate by Region")
+plt.xlabel("Average Unemployment Rate (%)")
+plt.ylabel("Region")
+
+plt.grid(axis="x")
+plt.tight_layout()
+
+plt.show()
+
+
+# ==========================================
+# 11. HIGHEST AND LOWEST REGION
+# ==========================================
+
+highest_region = region_unemployment.idxmax()
+highest_rate = region_unemployment.max()
+
+lowest_region = region_unemployment.idxmin()
+lowest_rate = region_unemployment.min()
+
+print("\n========== REGION RESULTS ==========")
+
+print(
+    "Highest unemployment region:",
+    highest_region,
+    "-",
+    round(highest_rate, 2),
+    "%"
+)
+
+print(
+    "Lowest unemployment region:",
+    lowest_region,
+    "-",
+    round(lowest_rate, 2),
+    "%"
+)
+
+
+# ==========================================
+# 12. HIGHEST AND LOWEST MONTH
+# ==========================================
+
+highest_month = monthly_unemployment.idxmax()
+highest_month_rate = monthly_unemployment.max()
+
+lowest_month = monthly_unemployment.idxmin()
+lowest_month_rate = monthly_unemployment.min()
+
+print("\n========== MONTH RESULTS ==========")
+
+print(
+    "Highest unemployment month:",
+    highest_month.strftime("%B %Y"),
+    "-",
+    round(highest_month_rate, 2),
+    "%"
+)
+
+print(
+    "Lowest unemployment month:",
+    lowest_month.strftime("%B %Y"),
+    "-",
+    round(lowest_month_rate, 2),
+    "%"
+)
+
+
+# ==========================================
+# 13. EMPLOYMENT TREND
+# ==========================================
+
+monthly_employment = df.groupby("Date")[
+    "Estimated Employed"
+].sum()
+
+plt.figure(figsize=(10, 5))
+
+plt.plot(
+    monthly_employment.index,
+    monthly_employment.values,
+    marker="o"
+)
+
+plt.title("Monthly Employment Trend")
+plt.xlabel("Month")
+plt.ylabel("Estimated Employed")
+
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+
+plt.show()
+
+
+# ==========================================
+# 14. LABOUR PARTICIPATION RATE
+# ==========================================
+
+monthly_participation = df.groupby("Date")[
+    "Estimated Labour Participation Rate (%)"
+].mean()
+
+plt.figure(figsize=(10, 5))
+
+plt.plot(
+    monthly_participation.index,
+    monthly_participation.values,
+    marker="o"
+)
+
+plt.title("Monthly Labour Participation Rate")
+plt.xlabel("Month")
+plt.ylabel("Participation Rate (%)")
+
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+
+plt.show()
+
+
+# ==========================================
+# 15. UNEMPLOYMENT VS LABOUR PARTICIPATION
+# ==========================================
+
+plt.figure(figsize=(8, 5))
+
+sns.scatterplot(
+    data=df,
+    x="Estimated Labour Participation Rate (%)",
+    y="Estimated Unemployment Rate (%)"
+)
+
+plt.title(
+    "Unemployment Rate vs Labour Participation Rate"
+)
+
+plt.xlabel("Labour Participation Rate (%)")
+plt.ylabel("Unemployment Rate (%)")
+
+plt.grid(True)
+plt.tight_layout()
+
+plt.show()
+
+
+# ==========================================
+# 16. COVID IMPACT BY REGION
+# ==========================================
+
+before_region = before_covid.groupby("Region")[
+    "Estimated Unemployment Rate (%)"
+].mean()
+
+during_region = during_covid.groupby("Region")[
+    "Estimated Unemployment Rate (%)"
+].mean()
+
+
+covid_region = pd.DataFrame({
+    "Before COVID": before_region,
+    "During COVID": during_region
+})
+
+covid_region["Increase"] = (
+    covid_region["During COVID"]
+    - covid_region["Before COVID"]
+)
+
+
+print("\n========== COVID IMPACT BY REGION ==========")
+
+print(covid_region.sort_values(
+    "Increase",
+    ascending=False
+))
+
+
+# ==========================================
+# 17. HEATMAP
+# ==========================================
+
+heatmap_data = df.pivot_table(
+    index="Region",
+    columns="Date",
+    values="Estimated Unemployment Rate (%)"
+)
+
+plt.figure(figsize=(14, 10))
+
+sns.heatmap(
+    heatmap_data,
+    cmap="YlOrRd"
+)
+
+plt.title("Unemployment Rate by Region and Month")
+plt.xlabel("Month")
+plt.ylabel("Region")
+
+plt.tight_layout()
+plt.show()
+
+
+# ==========================================
+# 18. FINAL INSIGHTS
+# ==========================================
+
+print("\n")
+print("=" * 60)
+print("                 FINAL INSIGHTS")
+print("=" * 60)
+
+print("""
+1. Unemployment was relatively lower before COVID-19.
+
+2. Unemployment increased significantly during the
+   COVID-19 lockdown period.
+
+3. The highest unemployment occurred around April-May 2020.
+
+4. Unemployment gradually decreased after the lockdown.
+
+5. Different regions had different unemployment rates.
+
+6. Some regions were more affected by COVID-19 than others.
+
+7. The data shows a strong COVID-related unemployment pattern.
+
+8. Employment generation and skill development can help
+   reduce unemployment during economic crises.
+
+9. This dataset covers only one year, so a repeating
+   seasonal trend cannot be confirmed.
+""")
+
+print("=" * 60)
+print("             ANALYSIS COMPLETED")
+print("=" * 60)
