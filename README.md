@@ -1,1 +1,2 @@
 # unemployment-analysis
+Unemployment Analysis with Python is a data analysis task that examines unemployment rate data to understand how unemployment changes over time. Using Python, the data will be cleaned, analyzed, and visualized to identify trends, seasonal patterns, and the impact of COVID-19. The analysis will also provide useful insights that can support economic and social policy decisions.
