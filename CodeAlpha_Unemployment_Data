@@ -1,29 +1,16 @@
-
-# TASK 2: UNEMPLOYMENT ANALYSIS
-
-# Import libraries
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-# 1. LOAD DATASET
 
 df = pd.read_csv("Unemployment_Rate_upto_11_2020.csv")
 
 print("Dataset loaded successfully!")
 
-# 2. DATA CLEANING
-
-# Remove spaces from column names
 df.columns = df.columns.str.strip()
 
-# Convert Date into proper date format
 df["Date"] = pd.to_datetime(df["Date"], dayfirst=True)
 
-# Sort data by date
 df = df.sort_values("Date")
-
-# 3. DISPLAY DATA
 
 print("\nFirst 5 rows:")
 print(df.head())
@@ -40,8 +27,6 @@ print(df.isnull().sum())
 print("\nStatistical summary:")
 print(df.describe())
 
-# 4. OVERALL UNEMPLOYMENT RATE
-
 average_unemployment = df[
     "Estimated Unemployment Rate (%)"
 ].mean()
@@ -49,18 +34,12 @@ average_unemployment = df[
 print("\nAverage Unemployment Rate:",
       round(average_unemployment, 2), "%")
 
-# 5. MONTHLY UNEMPLOYMENT RATE
-
-
 monthly_unemployment = df.groupby("Date")[
     "Estimated Unemployment Rate (%)"
 ].mean()
 
 print("\nMonthly Unemployment Rate:")
 print(monthly_unemployment)
-
-# 6. MONTHLY UNEMPLOYMENT GRAPH
-
 
 plt.figure(figsize=(10, 5))
 
@@ -80,21 +59,15 @@ plt.tight_layout()
 
 plt.show()
 
-# 7. COVID-19 ANALYSIS
-
-
-# Before COVID
 before_covid = df[
     df["Date"] < "2020-04-01"
 ]
 
-# During COVID lockdown
 during_covid = df[
     (df["Date"] >= "2020-04-01") &
     (df["Date"] <= "2020-06-30")
 ]
 
-# After lockdown
 after_covid = df[
     df["Date"] >= "2020-07-01"
 ]
@@ -124,9 +97,6 @@ print("During COVID:",
 print("After COVID:",
       round(after_rate, 2), "%")
 
-# 8. COVID COMPARISON GRAPH
-
-
 periods = [
     "Before COVID",
     "During COVID",
@@ -150,9 +120,6 @@ plt.ylabel("Average Unemployment Rate (%)")
 plt.tight_layout()
 plt.show()
 
-# 9. REGION-WISE UNEMPLOYMENT
-
-
 region_unemployment = df.groupby("Region")[
     "Estimated Unemployment Rate (%)"
 ].mean().sort_values(ascending=False)
@@ -160,8 +127,6 @@ region_unemployment = df.groupby("Region")[
 print("\n========== REGION-WISE UNEMPLOYMENT ==========")
 
 print(region_unemployment)
-
-# 10. REGION-WISE GRAPH
 
 plt.figure(figsize=(12, 8))
 
@@ -177,8 +142,6 @@ plt.grid(axis="x")
 plt.tight_layout()
 
 plt.show()
-
-# 11. HIGHEST AND LOWEST REGION
 
 highest_region = region_unemployment.idxmax()
 highest_rate = region_unemployment.max()
@@ -204,8 +167,6 @@ print(
     "%"
 )
 
-# 12. HIGHEST AND LOWEST MONTH
-
 highest_month = monthly_unemployment.idxmax()
 highest_month_rate = monthly_unemployment.max()
 
@@ -230,8 +191,6 @@ print(
     "%"
 )
 
-# 13. EMPLOYMENT TREND
-
 monthly_employment = df.groupby("Date")[
     "Estimated Employed"
 ].sum()
@@ -253,8 +212,6 @@ plt.grid(True)
 plt.tight_layout()
 
 plt.show()
-
-# 14. LABOUR PARTICIPATION RATE
 
 monthly_participation = df.groupby("Date")[
     "Estimated Labour Participation Rate (%)"
@@ -278,9 +235,6 @@ plt.tight_layout()
 
 plt.show()
 
-# 15. UNEMPLOYMENT VS LABOUR PARTICIPATION
-
-
 plt.figure(figsize=(8, 5))
 
 sns.scatterplot(
@@ -300,8 +254,6 @@ plt.grid(True)
 plt.tight_layout()
 
 plt.show()
-
-# 16. COVID IMPACT BY REGION
 
 before_region = before_covid.groupby("Region")[
     "Estimated Unemployment Rate (%)"
@@ -330,8 +282,6 @@ print(covid_region.sort_values(
     ascending=False
 ))
 
-# 17. HEATMAP
-
 heatmap_data = df.pivot_table(
     index="Region",
     columns="Date",
@@ -351,8 +301,6 @@ plt.ylabel("Region")
 
 plt.tight_layout()
 plt.show()
-
-# 18. FINAL INSIGHTS
 
 print("\n")
 print("=" * 60)
